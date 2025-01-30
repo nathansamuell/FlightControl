@@ -88,11 +88,6 @@ class RawText(QTextBrowser):
 
         # setup for before run
         self.setPlainText("This is the starting message!")
-        self.displayLoop()
-
-    def displayLoop(self):
-        if not self.timer.isActive():
-            self.timer.stop()
 
     def appendText(self, message):
         for i in range(len(message)):
