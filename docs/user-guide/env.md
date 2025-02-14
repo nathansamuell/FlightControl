@@ -33,15 +33,15 @@ FlightControl **won't** ever ship with a default password. Because it is connect
 
 With these assumptions in mind, the sensible defaults only really set two things:
 
-1. The default serial port is set to the default Raspberry Pi USB serial port. 
-2. The app is configured to run on real hardware tracking a rocket -- not a development environment.
+- The default serial port is set to the default Raspberry Pi USB serial port. 
+- The app is configured to run on real hardware tracking a rocket -- not a development environment.
 
 If these defaults don't fit your needs, be sure to keep reading and check out all of the configuration options you can use out of the box. If there is a feature you need for your team to succeed, make an issue on [GitHub](https://www.github.com/nathansamuell/FlightControl/issues) or fork the project to hack on and check out the [Developer Reference](../developer-reference/dev-landing.md).
 
 ## FlightControl's .env Variables
-Below is a table of all currently configureable .env variables. Some variables are **required** for FlightControl to work properly. Sensible defaults are setup in the [install instructions](installation.md) Some variables are used only in development or testing. They are included here in case they are useful for troubleshooting your own installation or customizing for your own situation. More information about developer variables can be found [here](../developer-reference/dev-landing.md)
+Below is a [table](#table-1) of all currently configureable .env variables. Some variables are **required** for FlightControl to work properly. Sensible defaults are setup in the [install instructions](installation.md) Some variables are used only in development or testing. They are included here in case they are useful for troubleshooting your own installation or customizing for your own situation. More information about developer variables can be found [here](../developer-reference/dev-landing.md)
 
-
+### Table 1
 |    Name                                          | Required | Developer | Default included? |    Type     |
 |  :--------:                                      | :------: | :-------: | :---------------: |  :------:   |
 | [USER_PASS](#env-variable-user_pass)             |     *    |           |        no         | string/int  |
@@ -73,7 +73,7 @@ This number will be converted to an integer under the hood and compared against 
 * [ ] Developer
 * [x] Set By Default
 
-This variable holds the filepath of the serial port that FlightControl expects to read rocket data from. It is not techically required in a testing setting (see [MOCK_SPORT_GS](#env-variable-mock_sport_gs)), but it is configured by default because it **IS** needed to run on a target machine during launch.
+This variable holds the filepath of the serial port that FlightControl expects to read rocket data from. It is not techically required in a testing setting (see [MOCK_SPORT_GS](#env-variable-mock_sport_gs)), but it is configured by default because the target machine **NEEDS** it during launch.
 
 Sample Setting:
 ```json
@@ -89,5 +89,16 @@ SERIAL_PORT="/dev/ttyUSB0"
 This variable is a boolean represented by a string ```"True"``` or ```"False"```.
 
 ### .env variable: MOCK_SPORT_GS
+* [ ] Required
+* [x] Developer
+* [ ] Set By Default
+
+This is a developer variable to enable local testing on one machine. Provided you can configure the serial port communication on your machine, you should create a pair of virtual serial porst and assign one to this variable. This is the port that FlightControl listens to, but the assignment is arbitrary.
 
 ### .env variable: MOCK_SPORT_TEST
+
+* [ ] Required
+* [x] Developer
+* [ ] Set By Default
+
+This is the other serial port in the pair -- this port is the one that the simulator program sends data to. 
