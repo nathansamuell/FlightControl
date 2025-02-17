@@ -10,3 +10,5 @@ src/flightctl.egg-info
 node_modules
 dist
 .pypirc
+dataOut.tmp
+outputName.csv

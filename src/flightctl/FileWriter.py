@@ -16,6 +16,7 @@ import os
 class FileWriter:
     def __init__(self):
         self.tempFile = "dataOut.tmp"
+        self.devFile = "FL42.csv"
         with open(self.tempFile, "w") as file:
             file.write("File Initialized\n")
 

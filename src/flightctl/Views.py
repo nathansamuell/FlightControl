@@ -11,9 +11,7 @@
 import importlib.resources as resources  # used for image handling
 
 # app class/qt imports
-from flightctl.FileWriter import FileWriter
 from flightctl.Numpad import Numpad
-from PyQt5.QtCore import QTimer
 
 # qt imports
 from PyQt5.QtGui import QFont, QPixmap

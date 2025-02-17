@@ -73,8 +73,8 @@ class MainWindow(QMainWindow):
         # set up port
         load_dotenv()
         mock = os.getenv("MOCK_SERIAL")
-        if mock == "True":
-            port = os.getenv("MOCK_SPORT_GS")
+        if mock == "TRUE":
+            port = "test"
             self.sc = SerialCommunicator(port, 9600)
         else:
             port = os.getenv("SERIAL_PORT")

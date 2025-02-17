@@ -7,32 +7,10 @@
 # of the license can be found here: https://choosealicense.com/licenses/mit/
 # All above text must be included in any restribution.
 
-
-# TODO:
-# check out this link: https://www.youtube.com/watch?v=AnZ0uTOerUI
-
-# in the beginning, he says that error handling is often an indicator of bad design
-# quote says to "only use exceptions when you cannot know if an operation can succeed or fail"
-# for us, we can't guarantee we'll receive rocket data perfectly reliably -- so we have ample
-# reason to use an exception or try/catch block to handle having an empty queue...for version
-# 1 of the app.
-
-# HOWEVER:
-# quote says that "Asking for data can fail. giving data when you have it cannot" at 16:35
-
-# we're currently facing issues trying to read from an empty queue -- the display always checks for data
-# even if the serial communicator doesn't ever receive it... this is an error where we're asking for
-# data we don't have!
-
-# shouldn't we refactor so that the serial communicator receiving data prompts a display update?
-# right now, it updates as it reads from a queue. What if we send a signal to update the display
-# containing our data--this should have the same effect. we still constantly update no matter
-# when its received, still solving our original system clock problem, but in this way, we
-# only give data when we have it -- instead of asking for data when we don't. Interesting stuff :)
-
-
 # imports
+import importlib.resources as resources
 import threading
+import time
 
 import serial  # noqa: F401
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -45,22 +23,53 @@ class SerialCommunicator(QObject):
         super().__init__()  # needed to inherit from any Q class
         serialPort = sp  # noqa: F841
         baudRate = br  # noqa: F841
-        try:
-            self.ser = serial.Serial(serialPort, baudRate, timeout=1)
 
-        except serial.serialutil.SerialException:
-            rocketPacket = "FLIGHTCTL: ERROR: Serial Port Not Open!"
-            self.dataSignal.emit(rocketPacket)
-        self.readThread = threading.Thread(target=self.read)
+        if sp == "test":
+            # set up reading from file
+            # run devRead method on FL42.csv
+            self.readThread = threading.Thread(target=self.devRead)
+            rocketPacket = "FLIGHTCTL: DEV MODE USING FL42.CSV"
+            self.dataSignal.emit([rocketPacket])
+
+        else:
+            try:
+                self.ser = serial.Serial(serialPort, baudRate, timeout=1)
+
+            except serial.serialutil.SerialException:
+                rocketPacket = "FLIGHTCTL: ERROR: Serial Port Not Open!"
+                self.dataSignal.emit([rocketPacket])
+
+            self.readThread = threading.Thread(target=self.read)
+
         self.stopEvent = threading.Event()
+
+    def devRead(self):
+        while not self.stopEvent.is_set():
+            rocketData = []
+            with resources.path(__package__, "FL42.csv") as path:
+                with open(path, "r") as file:
+                    i = 0
+                    for line in file:
+                        if self.stopEvent.is_set():
+                            return
+
+                        rocketPacket = line
+                        rocketData.append(rocketPacket)
+                        time.sleep(1)
+                        i += 1
+                        if i == 5:
+                            self.dataSignal.emit(rocketData)
+                            i = 0
+                            rocketData = []
 
     def read(self):
         # while the thread is running,
         while not self.stopEvent.is_set():
 
+            rocketData = []  # holds our list of five correctly picked data
+
             # attempt to collect five data collections (keeps our number of pyqt5 signals down)
             for i in range(5):
-                rocketData = []  # holds our list of five correctly picked data
                 try:
                     rocketPacket = (
                         self.ser.readline().decode("utf-8").rstrip()
