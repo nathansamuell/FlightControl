@@ -85,7 +85,7 @@ class RawText(QTextBrowser):
         super().__init__()
 
         # setup for before run
-        self.setPlainText("This is the starting message!")
+        self.setPlainText("FLIGHTCTL 1.0.0post2 -- AIAA UH\n")
 
     def appendText(self, message):
         for i in range(len(message)):
