@@ -20,6 +20,8 @@ from PyQt5.QtWidgets import (
     QLabel,
     QSizePolicy,
     QSpacerItem,
+    QTableWidget,
+    QTableWidgetItem,
     QTextBrowser,
     QVBoxLayout,
     QWidget,
@@ -90,3 +92,83 @@ class RawText(QTextBrowser):
     def appendText(self, message):
         for i in range(len(message)):
             self.append(message[i])
+
+
+class ParsedText(QTableWidget):
+    def __init__(self):
+        super().__init__()
+
+        # add test data
+        self.dataCols = 43
+        self.setColumnCount(self.dataCols)
+        self.setHorizontalHeaderLabels(
+            [
+                "time",
+                "lat",
+                "lon",
+                "sat",
+                "spd",
+                "cou",
+                "g_alt",
+                "state",
+                "eul_x",
+                "eul_y",
+                "eul_z",
+                "q_w",
+                "q_x",
+                "q_y",
+                "q_z",
+                "q_wn",
+                "q_xn",
+                "q_yn",
+                "q_zn",
+                "acc_i_x,acc_i_y",
+                "acc_i_z",
+                "rate_x",
+                "rate_y",
+                "rate_z",
+                "acc_b_x",
+                "acc_b_y",
+                "acc_b_z",
+                "rate_xn",
+                "rate_yn",
+                "rate_zn",
+                "acc_b_xn",
+                "acc_b_yn",
+                "acc_b_zn",
+                "acc_b_xh",
+                "acc_b_yh",
+                "acc_b_zh",
+                "press",
+                "alt",
+                "vel_z",
+                "t_lsm",
+                "t_axl",
+                "t_bno",
+                "t_bmp",
+            ]
+        )
+        self.rowCount = 0
+        self.scrollable = True
+        self.verticalScrollBar().sliderPressed.connect(self.scrollStop)
+        self.verticalScrollBar().sliderReleased.connect(self.scrollStart)
+
+    # deletes old entries
+    def scrollStop(self):
+        self.scrollable = False
+
+    def scrollStart(self):
+        self.scrollable = True
+
+    # used to add data to view
+    def appendText(self, message):
+        for i in range(len(message)):
+            self.insertRow(self.rowCount)
+            currCol = 0
+            for data in message[i].split(","):
+                self.setItem(self.rowCount, currCol, QTableWidgetItem(data))
+                if self.scrollable:
+                    self.scrollToBottom()
+                currCol += 1
+
+            self.rowCount += 1

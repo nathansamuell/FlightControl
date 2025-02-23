@@ -15,7 +15,7 @@ from enum import Enum
 from dotenv import load_dotenv
 from flightctl.FileWriter import FileWriter
 from flightctl.SerialCommunicator import SerialCommunicator
-from flightctl.Views import LoginWindow, RawText
+from flightctl.Views import LoginWindow, ParsedText, RawText
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QStackedLayout, QWidget
 
@@ -25,7 +25,8 @@ class WindowStatus(Enum):
     LOGIN = 1
     DEFAULT = 2
     RAW_TEXT = 3
-    FC_STATUS = 4  # this view shows us status updates from rocket components
+    PARSED_TEXT = 4  # parsed text in the form of a table
+    FC_STATUS = 5  # this view shows us status updates from rocket components
 
 
 class MainWindow(QMainWindow):
@@ -58,6 +59,13 @@ class MainWindow(QMainWindow):
         self.loginWindow = LoginWindow()
         self.windowStack.addWidget(self.loginWindow)
         self.statusSignal.emit(WindowStatus.LOGIN)
+
+        # add other views
+        self.rawText = RawText()
+        self.windowStack.addWidget(self.rawText)
+
+        self.parsedText = ParsedText()
+        self.windowStack.addWidget(self.parsedText)
 
     def initNP(self):
         self.loginWindow.numpad.loginSuccess.connect(self.loginSuccess)
@@ -97,6 +105,9 @@ class MainWindow(QMainWindow):
             case WindowStatus.RAW_TEXT:
                 self.rawText.appendText(data)
 
+            case WindowStatus.PARSED_TEXT:
+                self.parsedText.appendText(data)
+
         # write out our data regardless of view to file
         for element in data:
             self.fw.addToFile(element + "\n")
@@ -111,10 +122,12 @@ class MainWindow(QMainWindow):
             self.status = WindowStatus.LOGIN
             self.windowStack.setCurrentIndex(0)
 
+        elif status == WindowStatus.PARSED_TEXT:
+            self.status = WindowStatus.PARSED_TEXT
+            self.windowStack.setCurrentIndex(2)
+
     def loginSuccess(self):
         self.isDisplayOn = True
-        self.rawText = RawText()
-        self.windowStack.addWidget(self.rawText)
         self.statusSignal.emit(WindowStatus.RAW_TEXT)
         # self.sc.start()
 
@@ -135,7 +148,7 @@ class MainWindow(QMainWindow):
             self.statusSignal.emit(WindowStatus.RAW_TEXT)
 
         elif event.key() == Qt.Key_4:
-            self.statusSignal.emit(WindowStatus.FC_STATUS)
+            self.statusSignal.emit(WindowStatus.PARSED_TEXT)
 
         elif event.key() == Qt.Key_Escape:
             # stops the listening thread and closes the app

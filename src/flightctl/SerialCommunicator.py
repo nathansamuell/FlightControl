@@ -55,12 +55,12 @@ class SerialCommunicator(QObject):
 
                         rocketPacket = line
                         rocketData.append(rocketPacket)
-                        time.sleep(1)
                         i += 1
                         if i == 5:
                             self.dataSignal.emit(rocketData)
                             i = 0
                             rocketData = []
+                            time.sleep(0.1)
 
     def read(self):
         # while the thread is running,
