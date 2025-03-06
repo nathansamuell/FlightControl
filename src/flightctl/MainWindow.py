@@ -45,8 +45,8 @@ class MainWindow(QMainWindow):
         mainWidget = QWidget()
         mainWidget.setLayout(self.windowStack)
         self.setCentralWidget(mainWidget)
-        self.setFixedSize(800, 480)
-        # self.showFullScreen()
+        # self.setFixedSize(800, 480)
+        self.showFullScreen()
 
         # initialize modules
         self.initGUI()
