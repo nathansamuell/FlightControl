@@ -8,9 +8,15 @@
 # of the license can be found here: https://choosealicense.com/licenses/mit/
 # All above text must be included in any restribution.
 
+# Imports
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Retrieve Data as Pandas DataFrame
 flight_data = pd.read_csv("FL42.csv")
+
+# Save specific columns for visualization
+
+# Visualization with Matplotlib/Seaborn
