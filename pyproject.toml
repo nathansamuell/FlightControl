@@ -23,7 +23,7 @@ test = {inherit = true, dependencies = ["pytest", "PyQt5"]}
 
 [tool.hatch.envs.dev]
 inherit = true
-dependencies = ["PyQt5", "black", "isort"]
+dependencies = ["PyQt5", "black", "isort", "numpy", "pandas", "matplotlib", "seaborn"]
 
 [tool.hatch.envs.dev.scripts]
 flightctl = "python3 -m flightctl"
